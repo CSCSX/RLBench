@@ -204,6 +204,10 @@ class EndEffectorPoseViaPlanning(ArmActionMode):
         self._frame = frame
         self._collision_checking = collision_checking
         self._robot_shapes = None
+        self._callbacks = [] 
+
+    def register_callback(self, callback):
+        self._callbacks.append(callback)
 
     def _quick_boundary_check(self, scene: Scene, action: np.ndarray):
         pos_to_check = action[:3]
@@ -274,6 +278,8 @@ class EndEffectorPoseViaPlanning(ArmActionMode):
         while not done:
             done = path.step()
             scene.step()
+            for callback in self._callbacks:
+                callback(scene.get_observation())
             success, terminate = scene.task.success()
             # If the task succeeds while traversing path, then break early
             if success:
