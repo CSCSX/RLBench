@@ -208,6 +208,13 @@ class EndEffectorPoseViaPlanning(ArmActionMode):
 
     def register_callback(self, callback):
         self._callbacks.append(callback)
+    
+    def record_end(self, scene, steps=60, step_scene=True):
+        for callback in self._callbacks:
+            for _ in range(steps):
+                if step_scene:
+                    scene.step()
+                callback(scene.get_observation())
 
     def _quick_boundary_check(self, scene: Scene, action: np.ndarray):
         pos_to_check = action[:3]
