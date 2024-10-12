@@ -21,21 +21,11 @@ class RLBenchEnv(gym.Env):
     """An gym wrapper for RLBench."""
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
-    def __init__(self, task_class, observation_mode='state',
+    def __init__(self, task_class, obs_config: ObservationConfig,
                  render_mode: Union[None, str] = None, action_mode=None):
         self.task_class = task_class
-        self.observation_mode = observation_mode
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
-        obs_config = ObservationConfig()
-        if observation_mode == 'state':
-            obs_config.set_all_high_dim(False)
-            obs_config.set_all_low_dim(True)
-        elif observation_mode == 'vision':
-            obs_config.set_all(True)
-        else:
-            raise ValueError(
-                'Unrecognised observation_mode: %s.' % observation_mode)
         self.obs_config = obs_config
         if action_mode is None:
             action_mode = JointPositionActionMode()
@@ -82,14 +72,18 @@ class RLBenchEnv(gym.Env):
                 if np.isscalar(state_data):
                     state_data = np.asarray([state_data])
                 gym_obs[state_name] = state_data
-                
-        if self.observation_mode == 'vision':
-            gym_obs.update({
-                "left_shoulder_rgb": rlbench_obs.left_shoulder_rgb,
-                "right_shoulder_rgb": rlbench_obs.right_shoulder_rgb,
-                "wrist_rgb": rlbench_obs.wrist_rgb,
-                "front_rgb": rlbench_obs.front_rgb,
-            })
+
+        if self.obs_config.left_shoulder_camera.rgb:
+            gym_obs["left_shoulder_rgb"] = rlbench_obs.left_shoulder_rgb
+        if self.obs_config.right_shoulder_camera.rgb:
+            gym_obs["right_shoulder_rgb"] = rlbench_obs.right_shoulder_rgb
+        if self.obs_config.wrist_camera.rgb:
+            gym_obs["wrist_rgb"] = rlbench_obs.wrist_rgb
+        if self.obs_config.front_camera.rgb:
+            gym_obs["front_rgb"] = rlbench_obs.front_rgb
+        if self.obs_config.overhead_camera.rgb:
+            gym_obs["overhead_rgb"] = rlbench_obs.overhead_rgb
+
         return gym_obs
 
     def render(self):
