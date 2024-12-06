@@ -22,7 +22,7 @@ class RLBenchEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
     def __init__(self, task_class, obs_config: ObservationConfig,
-                 render_mode: Union[None, str] = None, action_mode=None):
+                 render_mode: Union[None, str] = None, action_mode=None, headless=True):
         self.task_class = task_class
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
@@ -34,7 +34,7 @@ class RLBenchEnv(gym.Env):
         self.rlbench_env = Environment(
             action_mode=self.action_mode,
             obs_config=self.obs_config,
-            headless=True,
+            headless=headless,
         )
         self.rlbench_env.launch()
         self.rlbench_task_env = self.rlbench_env.get_task(self.task_class)
