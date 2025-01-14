@@ -33,6 +33,7 @@ def main(args):
     obs.set_all(False)
     scene = Scene(sim, robot, obs)
 
+    num_tasks, num_variations = 0, 0
     for task_file in os.listdir(TASKS_PATH):
         if not task_file.endswith('.py') or task_file == '__init__.py':
             continue
@@ -45,6 +46,8 @@ def main(args):
             # load task
             scene.load(task)
             task.init_task()
+            num_tasks += 1
+            num_variations += task.variation_count()
             table.add_row([
                 task_file, 
                 task_class.__name__, 
@@ -63,6 +66,10 @@ def main(args):
     os.makedirs(output_dir, exist_ok=True)
     with open(args.output_file, 'w') as f:
         f.write(str(table))
+        f.write(f'\n\nTotal tasks: {num_tasks}\n')
+        f.write(f'Total variations: {num_variations}\n')
+    print(f'Total tasks: {num_tasks}')
+    print(f'Total variations: {num_variations}')
     print('Task report saved to task_report.txt')
 
 

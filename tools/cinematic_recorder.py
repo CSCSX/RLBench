@@ -21,7 +21,7 @@ from rlbench.sim2real.domain_randomization import RandomizeEvery, \
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
-    'save_dir', '/tmp/rlbench_videos/',
+    'save_dir', './results_cinematic/',
     'Where to save the generated videos.')
 flags.DEFINE_list(
     'tasks', [], 'The tasks to record. If empty, all tasks are recorded.')
@@ -145,7 +145,7 @@ def main(argv):
     for i, (name, cls) in enumerate(zip(task_names, task_classes)):
         good = tr.record_task(cls)
         if FLAGS.individual and good:
-            tr.save(os.path.join(FLAGS.save_dir, '%s.avi' % name))
+            tr.save(os.path.join(FLAGS.save_dir, '%s.mp4' % name))
 
     if not FLAGS.individual:
         tr.save(os.path.join(FLAGS.save_dir, 'recorded_tasks.mp4'))
