@@ -111,6 +111,17 @@ class JointPosition(ArmActionMode):
             absolute_mode: If we should opperate in 'absolute', or 'delta' mode.
         """
         self._absolute_mode = absolute_mode
+        self._callbacks = [] 
+
+    def register_callback(self, callback):
+        self._callbacks.append(callback)
+    
+    def record_end(self, scene, steps=60, step_scene=True):
+        for callback in self._callbacks:
+            for _ in range(steps):
+                if step_scene:
+                    scene.step()
+                callback(scene.get_observation())
 
     def action(self, scene: Scene, action: np.ndarray):
         self.action_pre_step(scene, action)
@@ -129,6 +140,8 @@ class JointPosition(ArmActionMode):
     def action_post_step(self, scene: Scene, action: np.ndarray):
         scene.robot.arm.set_joint_target_positions(
             scene.robot.arm.get_joint_positions())
+        for callback in self._callbacks:
+            callback(scene.get_observation())
 
     def action_shape(self, scene: Scene) -> tuple:
         return SUPPORTED_ROBOTS[scene.robot_setup][2],
