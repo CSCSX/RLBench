@@ -27,6 +27,10 @@ class CloseFridge(Task):
     def boundary_root(self) -> Object:
         return Shape('fridge_root')
 
+    # def base_rotation_bounds(self) -> Tuple[Tuple[float, float, float],
+    #                                         Tuple[float, float, float]]:
+    #     return (0.0, 0.0, -np.pi / 4), (0.0, 0.0, np.pi / 4)
+    
     def base_rotation_bounds(self) -> Tuple[Tuple[float, float, float],
                                             Tuple[float, float, float]]:
-        return (0.0, 0.0, -np.pi / 4), (0.0, 0.0, np.pi / 4)
+        return (0.0, 0.0, 3*np.pi / 4), (0.0, 0.0, 5*np.pi / 4)
